@@ -1,0 +1,54 @@
+Airbnb Room Booking System named roomify – 6 Main Features
+1. User Registration & Login
+
+New users can sign up with name, email, and password.
+
+Existing users can log in to access booking options.
+
+Passwords are securely stored (hashed in the database).
+
+Admins have a separate login for managing rooms and bookings.
+
+2. Browse Available Rooms
+
+All available rooms are displayed in a clean card layout (with photo, price, and location).
+
+Users can view room details before booking.
+
+Only rooms marked as available in the database are shown.
+
+3. Search Rooms by Location
+
+A search bar allows users to find rooms in a specific city or area.
+
+Example: typing “Dhaka” shows all rooms located in Dhaka.
+
+Uses a simple SQL LIKE query to filter results.
+
+4. Book a Room
+
+Logged-in users can book a room by selecting check-in and check-out dates.
+
+System calculates total cost (number_of_days × price_per_night).
+
+Booking info is stored in the bookings table.
+
+The room status updates to “booked.”
+
+5. View & Manage Bookings
+
+Users can view their booking history (past and upcoming stays).
+
+Admins can view all user bookings.
+
+Admin can update booking status (e.g., Confirmed / Cancelled).
+
+6. Admin Dashboard
+
+Admin can manage the entire system:
+
+Add, edit, or delete rooms
+
+Change room availability
+
+View and manage all bookings
