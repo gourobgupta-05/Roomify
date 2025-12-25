@@ -3,10 +3,6 @@ from .database import execute_query, execute_read_query
 
 def hash_password(password):
     """Hash a password for storing."""
-    # salt = bcrypt.gensalt()
-    # hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
-    # return hashed.decode('utf-8')
-    # Using a simpler approach for now to match common Python bcrypt usage, verifying compatibility
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 def verify_password(stored_password, provided_password):
@@ -30,13 +26,19 @@ def register_user(name, email, phone, password):
         return False, "Registration failed."
 
 def login_user(email, password):
-    """Log in a user."""
+    """Log in a user or admin with unified authentication."""
+    # First, check if it's a user
     users = execute_read_query("SELECT * FROM USER WHERE `e-mail` = %s", (email,))
-    if not users:
-        return None, "Invalid email or password."
+    if users:
+        user = users[0]
+        if verify_password(user['password'], password):
+            return {**user, 'user_type': 'user'}, "Login successful!"
     
-    user = users[0]
-    if verify_password(user['password'], password):
-        return user, "Login successful!"
-    else:
-        return None, "Invalid email or password."
+    # If not found in USER table, check Admin table
+    admins = execute_read_query("SELECT * FROM Admin WHERE email = %s", (email,))
+    if admins:
+        admin = admins[0]
+        if verify_password(admin['password'], password):
+            return {**admin, 'user_type': 'admin'}, "Admin login successful!"
+    
+    return None, "Invalid email or password."

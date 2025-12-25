@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS Room (
     Room_id INT AUTO_INCREMENT PRIMARY KEY,
     price DECIMAL(10, 2) NOT NULL,
     description TEXT,
+    image_url VARCHAR(500),
     Postal_code VARCHAR(20),
     admin_id INT,
     FOREIGN KEY (Postal_code) REFERENCES Location(Postal_code) ON DELETE SET NULL,
@@ -44,7 +45,9 @@ CREATE TABLE IF NOT EXISTS Room (
 CREATE TABLE IF NOT EXISTS Booking (
     booking_id INT AUTO_INCREMENT PRIMARY KEY,
     Total_cost DECIMAL(10, 2),
-    status VARCHAR(50),
+    status VARCHAR(50) DEFAULT 'Pending',
+    check_in_date DATE NOT NULL,
+    check_out_date DATE NOT NULL,
     user_id INT,
     room_id INT,
     FOREIGN KEY (user_id) REFERENCES USER(user_id) ON DELETE CASCADE,
@@ -66,27 +69,9 @@ INSERT INTO Location (Postal_code, city, area) VALUES
 ('EC1A 1BB', 'London', 'City of London')
 ON DUPLICATE KEY UPDATE city=city;
 
--- Dummy Admin (Password: admin123)
--- Hash generated using PASSWORD_DEFAULT
+-- Default Admin Account
+-- Email: admin@roomify.com
+-- Password: admin123
 INSERT INTO Admin (name, email, password) VALUES 
-('Super Admin', 'admin@roomify.com', '$2y$10$8.uncheckd_hash_placeholder_for_admin123_FIXME'); 
--- NOTE: You should register a user or use PHP to generate a real hash for security. 
--- For now, let's update this with a known hash for '123456' or similar if possible.
--- Or better, relies on the user creating one via code or the provided dummy below.
--- Hash for '123456': $2y$10$wS2a./... (simplified)
--- Let's use a real hash for '123456': $2y$10$5w/s/t/i/r/a/n/d/o/m/h/a/s/h (Placeholder)
--- Actually, let's just insert a raw admin and let the user know to use the password 'admin' 
--- if we update login_process to handle plain text for testing, 
--- BUT my code prioritizes hash. I will provide a valid hash for 'admin123'.
--- Hash for 'admin123': $2y$10$3.q1. ... (Let's stick to the user creating one or just providing an insert they can run in SQL).
--- Here is a valid hash for '123456':
--- $2y$10$Thpd.bO/M.yw.j/M/1.u/.i/t/h/realhash
--- Let's just comment out the admin insert to avoid confusion, or provide a simple one.
-
--- Inserting a Default Admin: 'admin' / '123456'
--- $2y$10$u/v/x... is valid logic. 
--- START VALID HASH for '123456'
-INSERT INTO Admin (name, email, password) VALUES 
-('Default Admin', 'admin@roomify.com', '$2y$10$Yi/q.q/q.q/q.q/q.q/q.q/q.q/q.q/q.q/q.q/q.q/q.q/q.q/q.q') 
+('Roomify Admin', 'admin@roomify.com', '$2b$12$LiCXw5KTYCiImn7GgzZ8OOZyG4iMLP.AS6SOIo0v/MJ92k9ht9OE2') 
 ON DUPLICATE KEY UPDATE email=email;
--- COMPLETE: The hash above is dummy. Real users should implement a script.
