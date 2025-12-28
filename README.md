@@ -1,4 +1,4 @@
-# Roomify - Airbnb Clone
+# Roomify 
 
 Roomify is a room booking system similar to Airbnb.
 
