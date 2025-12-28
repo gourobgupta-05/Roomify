@@ -304,7 +304,8 @@ def create_pages():
                                     image_input = ui.input('Image URL')
                                     
                                     locations = get_all_locations()
-                                    location_options = {f"{loc['city']}, {loc['area']}": loc['Postal_code'] for loc in locations}
+                                    # map Postal_code -> "City, Area" so select.value returns Postal_code
+                                    location_options = {loc['Postal_code']: f"{loc['city']}, {loc['area']}" for loc in locations}
                                     location_select = ui.select(location_options, label='Location')
                                     
                                     def add_room():
@@ -327,11 +328,22 @@ def create_pages():
                                         print(f"DEBUG UI: location_select.value = '{location_select.value}' (type: {type(location_select.value)})")
                                         
                                         try:
+                                            # Determine Postal_code robustly. NiceGUI's select may return
+                                            # either the option key or the option label depending on config.
+                                            selected = location_select.value
+                                            # location_options maps Postal_code -> "City, Area"
+                                            if selected in location_options:
+                                                postal_code = selected
+                                            else:
+                                                # reverse lookup: label -> Postal_code
+                                                inv = {v: k for k, v in location_options.items()}
+                                                postal_code = inv.get(selected, selected)
+
                                             success, message = create_room(
                                                 price,
                                                 desc_input.value,
                                                 image_input.value if image_input.value else None,
-                                                location_select.value,
+                                                postal_code,
                                                 admin_id
                                             )
                                             ui.notify(message, type='positive' if success else 'negative')

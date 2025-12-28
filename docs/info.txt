@@ -1,4 +1,4 @@
-Airbnb Room Booking System named roomify – 6 Main Features
+Booking System named roomify – 6 Main Features
 1. User Registration & Login
 
 New users can sign up with name, email, and password.
