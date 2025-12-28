@@ -93,6 +93,9 @@ def create_pages():
         user = require_login()
         if not user:
             return
+        if user.get('user_type') == 'admin':
+            ui.navigate.to('/admin')
+            return
 
         with ui.column().classes('w-full p-4'):
             # Header
@@ -148,6 +151,9 @@ def create_pages():
     def room_details(room_id: int):
         user = require_login()
         if not user:
+            return
+        if user.get('user_type') == 'admin':
+            ui.navigate.to('/admin')
             return
 
         room = get_room_details(room_id)
@@ -230,6 +236,9 @@ def create_pages():
         user = require_login()
         if not user:
             return
+        if user.get('user_type') == 'admin':
+            ui.navigate.to('/admin')
+            return
 
         with ui.column().classes('w-full p-8'):
             with ui.row().classes('w-full items-center justify-between mb-4'):
@@ -303,17 +312,34 @@ def create_pages():
                                             ui.notify('Please fill all required fields', type='warning')
                                             return
                                         
-                                        success, message = create_room(
-                                            price_input.value,
-                                            desc_input.value,
-                                            image_input.value if image_input.value else None,
-                                            location_select.value,
-                                            user['admin_id']
-                                        )
-                                        ui.notify(message, type='positive' if success else 'negative')
-                                        if success:
-                                            dialog.close()
-                                            load_admin_rooms()
+                                        try:
+                                            price = float(price_input.value)
+                                        except ValueError:
+                                            ui.notify('Invalid price format', type='warning')
+                                            return
+                                            
+                                        # Use admin_id from user session, ensuring it exists
+                                        admin_id = user.get('admin_id')
+                                        if not admin_id:
+                                            ui.notify('Admin session invalid. Please relogin.', type='negative')
+                                            return
+                                        
+                                        print(f"DEBUG UI: location_select.value = '{location_select.value}' (type: {type(location_select.value)})")
+                                        
+                                        try:
+                                            success, message = create_room(
+                                                price,
+                                                desc_input.value,
+                                                image_input.value if image_input.value else None,
+                                                location_select.value,
+                                                admin_id
+                                            )
+                                            ui.notify(message, type='positive' if success else 'negative')
+                                            if success:
+                                                dialog.close()
+                                                load_admin_rooms()
+                                        except Exception as e:
+                                            ui.notify(f'Error creating room: {str(e)}', type='negative')
                                     
                                     with ui.row():
                                         ui.button('Add Room', on_click=add_room).classes('bg-green-600 text-white')

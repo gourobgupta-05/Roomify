@@ -28,8 +28,10 @@ def execute_query(query, params=None):
         try:
             cursor = connection.cursor()
             if params:
+                print(f"DEBUG: Executing query: {query} with params: {params}")
                 cursor.execute(query, params)
             else:
+                print(f"DEBUG: Executing query: {query}")
                 cursor.execute(query)
             connection.commit()
             return True
